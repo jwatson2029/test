@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iCoder Search System</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        glass: 'rgba(255, 255, 255, 0.05)',
+                        glassBorder: 'rgba(255, 255, 255, 0.1)',
+                    },
+                    animation: {
+                        'blob': 'blob 15s infinite alternate',
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '100%': { transform: 'translate(50px, -50px) scale(1.1)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --sky-1: #0c77ff;
+            --sky-2: #1497ff;
+            --sky-3: #0660f0;
+            --sky-4: #043fbf;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            overflow: hidden;
+            position: fixed;
+            inset: 0;
+        }
+
+        body {
+            color: #ffffff;
+            overflow: hidden;
+            background: #0c77ff;
+            overscroll-behavior: none;
+            touch-action: none;
+        }
+
+        .background-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transform: scale(1.08);
+            filter: blur(10px) saturate(1.05) brightness(0.98);
+            pointer-events: none;
+            user-select: none;
+            z-index: -2;
+        }
+
+        .background-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                linear-gradient(to bottom, rgba(2, 12, 32, 0.42), rgba(2, 12, 32, 0.24) 32%, rgba(2, 12, 32, 0.36) 100%),
+                radial-gradient(circle at center, transparent 22%, rgba(2, 12, 32, 0.24) 100%);
+        }
+
+        .hero-stage {
+            position: relative;
+            z-index: 10;
+        }
+
+        .status-panel {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 20;
+            padding: 0.7rem 1rem;
+            border-radius: 9999px;
+            background: rgba(6, 16, 38, 0.46);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+            color: rgba(255, 255, 255, 0.96);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+        }
+
+        .foreground-shell {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            transform: scale(0.86) translateY(-2vh);
+            transform-origin: center center;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .foreground-shell {
+                transform: scale(0.95) translateY(0);
+            }
+        }
+
+        .viewport-lock {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        /* Search input specific glowing effects */
+        .search-input-glow {
+            color: #ffffff;
+            background-color: rgba(8, 14, 28, 0.72);
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .search-input-glow::placeholder {
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .search-input-glow:focus {
+            box-shadow: 0 0 40px rgba(0, 242, 254, 0.28), inset 0 0 10px rgba(255,255,255,0.06);
+            border-color: rgba(0, 242, 254, 0.55);
+        }
+
+        /* Custom scrollbar for absolute perfection */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    </style>
+</head>
+    <body class="min-h-screen w-full relative selection:bg-cyan-500 selection:text-white">
+
+    <div class="viewport-lock">
+    <img src="CF3FFA08-7ADB-49AF-ABA2-2A29771F3217%202.PNG" alt="Background" class="background-image" />
+    <div class="background-overlay"></div>
+
+    <div class="foreground-shell">
+    <div class="status-panel opacity-0 animate-fade-in-up" style="animation-delay: 0.12s;">
+        <div class="flex items-center gap-3 text-sm md:text-base font-medium whitespace-nowrap">
+            <span id="status-time">00:00</span>
+            <span class="text-white/60">|</span>
+            <span id="status-date">Loading date...</span>
+            <span class="text-white/60 hidden sm:inline">|</span>
+            <span id="status-weather" class="hidden sm:inline">Loading weather...</span>
+        </div>
+    </div>
+
+    <main class="hero-stage absolute inset-0 z-10 w-full min-h-screen px-6 flex flex-col items-center justify-center text-center">
+        
+        <!-- Dynamic Greeting -->
+        <div class="mb-10 opacity-0 animate-fade-in-up drop-shadow-[0_10px_26px_rgba(0,0,0,0.5)]" style="animation-delay: 0.3s;">
+            <h1 id="greeting" class="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight text-white">
+                Good <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">Day</span>
+            </h1>
+            <p class="text-white/88 text-base md:text-lg font-medium">What are we researching today, iCoder?</p>
+        </div>
+
+        <!-- Central Search Bar -->
+        <div class="w-full max-w-3xl relative opacity-0 animate-fade-in-up" style="animation-delay: 0.5s;">
+            <form action="https://www.google.com/search" method="get" class="w-full relative group">
+                <!-- Search Icon -->
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-cyan-400 transition-colors text-lg"></i>
+                </div>
+                
+                <!-- Input Field -->
+                <input 
+                    type="text" 
+                    name="q" 
+                    id="main-search"
+                    class="w-full bg-white/12 border border-white/18 rounded-2xl py-5 pl-14 pr-8 text-lg md:text-xl text-white placeholder-gray-200 backdrop-blur-xl outline-none transition-all duration-300 search-input-glow shadow-[0_24px_60px_rgba(0,24,102,0.2)]"
+                    placeholder="Search the web or type a command..." 
+                    autocomplete="off" 
+                    autofocus
+                >
+                
+                <!-- Enter Button Hint -->
+                <div class="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
+                    <span class="bg-gray-800 text-gray-400 text-xs px-2 py-1 rounded border border-gray-700 font-mono hidden md:block">↵ Enter</span>
+                </div>
+            </form>
+            
+        </div>
+    </main>
+
+    <footer class="absolute bottom-0 left-0 right-0 z-20 pb-8 pt-4 px-6 opacity-0 animate-fade-in-up" style="animation-delay: 0.7s;">
+        <div class="max-w-2xl mx-auto">
+            <div class="flex flex-wrap justify-center gap-3 sm:gap-5 backdrop-blur-md bg-black/28 border border-white/18 rounded-3xl p-3.5 shadow-2xl">
+                
+                <!-- App Item 1: Scratch -->
+                <a href="https://scratch.mit.edu/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center shadow-lg group-hover:shadow-orange-500/50 transition-shadow">
+                        <i class="fa-solid fa-cat text-white text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">Scratch</span>
+                </a>
+
+                <!-- App Item 2: Tinkercad -->
+                <a href="https://www.tinkercad.com/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg group-hover:shadow-blue-500/50 transition-shadow">
+                        <i class="fa-solid fa-cube text-white text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">Tinkercad</span>
+                </a>
+
+                <!-- App Item 3: Code.org -->
+                <a href="https://code.org/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center shadow-lg group-hover:shadow-teal-500/50 transition-shadow">
+                        <i class="fa-solid fa-laptop-code text-white text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">Code.org</span>
+                </a>
+
+                <!-- App Item 4: Replit -->
+                <a href="https://replit.com/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center shadow-lg group-hover:shadow-gray-500/50 transition-shadow">
+                        <i class="fa-solid fa-terminal text-white text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">Replit</span>
+                </a>
+
+                <!-- App Item 5: ChatGPT -->
+                <a href="https://chat.openai.com/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg group-hover:shadow-purple-500/50 transition-shadow">
+                        <i class="fa-solid fa-robot text-white text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">AI Chat</span>
+                </a>
+
+            </div>
+        </div>
+    </footer>
+    </div>
+    </div>
+
+    <script>
+        function updateTimeAndGreeting() {
+            const now = new Date();
+            
+            // 1. Update Clock
+            const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+            const statusTime = document.getElementById('status-time');
+            if (statusTime) {
+                statusTime.textContent = now.toLocaleTimeString('en-US', timeOptions);
+            }
+            
+            // 2. Update Date
+            const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+            const statusDate = document.getElementById('status-date');
+            if (statusDate) {
+                statusDate.textContent = now.toLocaleDateString('en-US', dateOptions);
+            }
+
+            // 3. Fake weather based on the current hour
+            const weatherByHour = [
+                { label: 'Clear 72°F', icon: '☀️' },
+                { label: 'Partly Cloudy 70°F', icon: '⛅' },
+                { label: 'Sunny 75°F', icon: '🌤️' },
+                { label: 'Light Breeze 68°F', icon: '🌬️' },
+                { label: 'Warm 73°F', icon: '🌞' },
+                { label: 'Cloudy 69°F', icon: '☁️' }
+            ];
+            const weather = weatherByHour[now.getHours() % weatherByHour.length];
+            const statusWeather = document.getElementById('status-weather');
+            if (statusWeather) {
+                statusWeather.textContent = `${weather.icon} ${weather.label}`;
+            }
+
+            // 4. Dynamic Greeting based on hour
+            const hour = now.getHours();
+            let greetingWord = "Day";
+            let gradientFrom = "from-cyan-400";
+            let gradientTo = "to-blue-500";
+
+            if (hour >= 5 && hour < 12) {
+                greetingWord = "Morning";
+                gradientFrom = "from-amber-300";
+                gradientTo = "to-orange-500";
+            } else if (hour >= 12 && hour < 17) {
+                greetingWord = "Afternoon";
+                gradientFrom = "from-orange-400";
+                gradientTo = "to-rose-500";
+            } else if (hour >= 17 && hour < 22) {
+                greetingWord = "Evening";
+                gradientFrom = "from-indigo-400";
+                gradientTo = "to-purple-500";
+            } else {
+                greetingWord = "Night";
+                gradientFrom = "from-blue-400";
+                gradientTo = "to-cyan-500";
+            }
+
+            const greetingSpan = document.querySelector('#greeting span');
+            greetingSpan.textContent = greetingWord;
+            // Reset existing gradient classes and apply new ones
+            greetingSpan.className = `bg-clip-text text-transparent bg-gradient-to-r ${gradientFrom} ${gradientTo}`;
+        }
+
+        // Initialize clock and greeting, then update every second
+        updateTimeAndGreeting();
+        setInterval(updateTimeAndGreeting, 1000);
+
+        // Ensure search is always focused when window is clicked or opened
+        window.addEventListener('load', () => document.getElementById('main-search').focus());
+        window.addEventListener('click', () => {
+            const searchInput = document.getElementById('main-search');
+            // Only force focus if they aren't clicking on a link
+            if (document.activeElement.tagName !== 'A') {
+                searchInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
