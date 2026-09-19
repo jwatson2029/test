@@ -182,7 +182,7 @@
             <h1 id="greeting" class="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight text-white">
                 Good <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">Day</span>
             </h1>
-            <p class="text-white/88 text-base md:text-lg font-medium">What are we researching today, iCoder?</p>
+            <p id="tagline-message" class="text-white/88 text-base md:text-lg font-medium">What are we researching today, iCoder?</p>
         </div>
 
         <!-- Central Search Bar -->
@@ -279,6 +279,19 @@
             const statusDate = document.getElementById('status-date');
             if (statusDate) {
                 statusDate.textContent = now.toLocaleDateString('en-US', dateOptions);
+            }
+
+            const motivationalMessages = [
+                'What are we researching today, iCoder?',
+                'Let’s build something useful today.',
+                'Keep going. Small steps add up.',
+                'Find the answer, then improve it.',
+                'Make today count, one search at a time.'
+            ];
+            const taglineMessage = document.getElementById('tagline-message');
+            if (taglineMessage) {
+                const messageIndex = Math.floor(now.getTime() / 5000) % motivationalMessages.length;
+                taglineMessage.textContent = motivationalMessages[messageIndex];
             }
 
             // 3. Dynamic Greeting based on hour
