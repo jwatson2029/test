@@ -147,6 +147,11 @@
             border-color: rgba(0, 242, 254, 0.55);
         }
 
+        .tagline-message {
+            transition: opacity 240ms ease, transform 240ms ease;
+            will-change: opacity, transform;
+        }
+
         .site-logo {
             width: 1.8rem;
             height: 1.8rem;
@@ -182,7 +187,7 @@
             <h1 id="greeting" class="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight text-white">
                 Good <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">Day</span>
             </h1>
-            <p id="tagline-message" class="text-white/88 text-base md:text-lg font-medium">What are we researching today, iCoder?</p>
+            <p id="tagline-message" class="tagline-message text-white/88 text-base md:text-lg font-medium">What are we researching today, iCoder?</p>
         </div>
 
         <!-- Central Search Bar -->
@@ -281,19 +286,6 @@
                 statusDate.textContent = now.toLocaleDateString('en-US', dateOptions);
             }
 
-            const motivationalMessages = [
-                'What are we researching today, iCoder?',
-                'Let’s build something useful today.',
-                'Keep going. Small steps add up.',
-                'Find the answer, then improve it.',
-                'Make today count, one search at a time.'
-            ];
-            const taglineMessage = document.getElementById('tagline-message');
-            if (taglineMessage) {
-                const messageIndex = Math.floor(now.getTime() / 5000) % motivationalMessages.length;
-                taglineMessage.textContent = motivationalMessages[messageIndex];
-            }
-
             // 3. Dynamic Greeting based on hour
             const hour = now.getHours();
             let greetingWord = "Day";
@@ -326,9 +318,37 @@
             }
         }
 
+        const motivationalMessages = [
+            'What are we researching today, iCoder?',
+            'Let’s build something useful today.',
+            'Keep going. Small steps add up.',
+            'Find the answer, then improve it.',
+            'Make today count, one search at a time.'
+        ];
+
+        function updateTaglineMessage() {
+            const taglineMessage = document.getElementById('tagline-message');
+            if (!taglineMessage) {
+                return;
+            }
+
+            const messageIndex = Math.floor(Date.now() / 5000) % motivationalMessages.length;
+
+            taglineMessage.style.opacity = '0';
+            taglineMessage.style.transform = 'translateY(6px)';
+
+            window.setTimeout(() => {
+                taglineMessage.textContent = motivationalMessages[messageIndex];
+                taglineMessage.style.opacity = '1';
+                taglineMessage.style.transform = 'translateY(0)';
+            }, 240);
+        }
+
         // Initialize clock and greeting, then update every second
         updateTimeAndGreeting();
         setInterval(updateTimeAndGreeting, 1000);
+        updateTaglineMessage();
+        setInterval(updateTaglineMessage, 5000);
 
         // Ensure search is always focused when window is clicked or opened
         window.addEventListener('load', () => {
