@@ -172,8 +172,6 @@
             <span id="status-time">00:00</span>
             <span class="text-white/60">|</span>
             <span id="status-date">Loading date...</span>
-            <span class="text-white/60 hidden sm:inline">|</span>
-            <span id="status-weather" class="hidden sm:inline">Loading weather...</span>
         </div>
     </div>
 
@@ -283,36 +281,7 @@
                 statusDate.textContent = now.toLocaleDateString('en-US', dateOptions);
             }
 
-            // 3. Georgia weather estimate based on season and time of day
-            const month = now.getMonth();
-            const hourOfDay = now.getHours();
-            const isDaytime = hourOfDay >= 7 && hourOfDay < 19;
-
-            const georgiaWeatherBySeason = [
-                { label: 'Cool and sunny 56°F', icon: '☀️' },
-                { label: 'Mild and breezy 68°F', icon: '🌤️' },
-                { label: 'Warm with scattered clouds 82°F', icon: '⛅' },
-                { label: 'Humid and stormy 88°F', icon: '⛈️' },
-                { label: 'Sticky and cloudy 76°F', icon: '☁️' },
-                { label: 'Cool and clear 60°F', icon: '🌙' }
-            ];
-
-            const seasonIndex = month <= 1 ? 0 : month <= 3 ? 1 : month <= 5 ? 2 : month <= 7 ? 3 : month <= 9 ? 4 : 5;
-            let weather = georgiaWeatherBySeason[seasonIndex];
-
-            if (!isDaytime) {
-                weather = {
-                    label: `${weather.label.split(' ').slice(0, -1).join(' ')} ${Math.max(48, parseInt(weather.label.match(/(\d+)°F/)?.[1] || '60', 10) - 4)}°F`,
-                    icon: '🌙'
-                };
-            }
-
-            const statusWeather = document.getElementById('status-weather');
-            if (statusWeather) {
-                statusWeather.textContent = `${weather.icon} GA estimate: ${weather.label}`;
-            }
-
-            // 4. Dynamic Greeting based on hour
+            // 3. Dynamic Greeting based on hour
             const hour = now.getHours();
             let greetingWord = "Day";
             let gradientFrom = "from-cyan-400";
