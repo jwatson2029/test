@@ -283,19 +283,33 @@
                 statusDate.textContent = now.toLocaleDateString('en-US', dateOptions);
             }
 
-            // 3. Fake weather based on the current hour
-            const weatherByHour = [
-                { label: 'Clear 72°F', icon: '☀️' },
-                { label: 'Partly Cloudy 70°F', icon: '⛅' },
-                { label: 'Sunny 75°F', icon: '🌤️' },
-                { label: 'Light Breeze 68°F', icon: '🌬️' },
-                { label: 'Warm 73°F', icon: '🌞' },
-                { label: 'Cloudy 69°F', icon: '☁️' }
+            // 3. Georgia weather estimate based on season and time of day
+            const month = now.getMonth();
+            const hourOfDay = now.getHours();
+            const isDaytime = hourOfDay >= 7 && hourOfDay < 19;
+
+            const georgiaWeatherBySeason = [
+                { label: 'Cool and sunny 56°F', icon: '☀️' },
+                { label: 'Mild and breezy 68°F', icon: '🌤️' },
+                { label: 'Warm with scattered clouds 82°F', icon: '⛅' },
+                { label: 'Humid and stormy 88°F', icon: '⛈️' },
+                { label: 'Sticky and cloudy 76°F', icon: '☁️' },
+                { label: 'Cool and clear 60°F', icon: '🌙' }
             ];
-            const weather = weatherByHour[now.getHours() % weatherByHour.length];
+
+            const seasonIndex = month <= 1 ? 0 : month <= 3 ? 1 : month <= 5 ? 2 : month <= 7 ? 3 : month <= 9 ? 4 : 5;
+            let weather = georgiaWeatherBySeason[seasonIndex];
+
+            if (!isDaytime) {
+                weather = {
+                    label: `${weather.label.split(' ').slice(0, -1).join(' ')} ${Math.max(48, parseInt(weather.label.match(/(\d+)°F/)?.[1] || '60', 10) - 4)}°F`,
+                    icon: '🌙'
+                };
+            }
+
             const statusWeather = document.getElementById('status-weather');
             if (statusWeather) {
-                statusWeather.textContent = `${weather.icon} ${weather.label}`;
+                statusWeather.textContent = `${weather.icon} GA estimate: ${weather.label}`;
             }
 
             // 4. Dynamic Greeting based on hour
@@ -323,9 +337,11 @@
             }
 
             const greetingSpan = document.querySelector('#greeting span');
-            greetingSpan.textContent = greetingWord;
-            // Reset existing gradient classes and apply new ones
-            greetingSpan.className = `bg-clip-text text-transparent bg-gradient-to-r ${gradientFrom} ${gradientTo}`;
+            if (greetingSpan) {
+                greetingSpan.textContent = greetingWord;
+                // Reset existing gradient classes and apply new ones
+                greetingSpan.className = `bg-clip-text text-transparent bg-gradient-to-r ${gradientFrom} ${gradientTo}`;
+            }
         }
 
         // Initialize clock and greeting, then update every second
@@ -333,11 +349,16 @@
         setInterval(updateTimeAndGreeting, 1000);
 
         // Ensure search is always focused when window is clicked or opened
-        window.addEventListener('load', () => document.getElementById('main-search').focus());
+        window.addEventListener('load', () => {
+            const searchInput = document.getElementById('main-search');
+            if (searchInput) {
+                searchInput.focus();
+            }
+        });
         window.addEventListener('click', () => {
             const searchInput = document.getElementById('main-search');
             // Only force focus if they aren't clicking on a link
-            if (document.activeElement.tagName !== 'A') {
+            if (searchInput && document.activeElement.tagName !== 'A') {
                 searchInput.focus();
             }
         });
