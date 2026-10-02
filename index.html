@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iCoder Search System</title>
-    
+    <title>iCoder Welcome</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -41,13 +41,6 @@
     </script>
 
     <style>
-        :root {
-            --sky-1: #0c77ff;
-            --sky-2: #1497ff;
-            --sky-3: #0660f0;
-            --sky-4: #043fbf;
-        }
-
         html, body {
             height: 100%;
             width: 100%;
@@ -110,6 +103,16 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
         }
 
+        .status-hub {
+            color: #67e8f9;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .status-hub[hidden] {
+            display: none !important;
+        }
+
         .foreground-shell {
             position: absolute;
             inset: 0;
@@ -123,6 +126,14 @@
             .foreground-shell {
                 transform: scale(0.95) translateY(0);
             }
+
+            .status-panel {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+                width: auto;
+                justify-content: center;
+            }
         }
 
         .viewport-lock {
@@ -131,7 +142,6 @@
             overflow: hidden;
         }
 
-        /* Search input specific glowing effects */
         .search-input-glow {
             color: #ffffff;
             background-color: rgba(8, 14, 28, 0.72);
@@ -159,21 +169,22 @@
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
         }
 
-        /* Custom scrollbar for absolute perfection */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
-    <body class="min-h-screen w-full relative selection:bg-cyan-500 selection:text-white">
+<body class="min-h-screen w-full relative selection:bg-cyan-500 selection:text-white font-sans">
 
     <div class="viewport-lock">
-    <img src="CF3FFA08-7ADB-49AF-ABA2-2A29771F3217%202.PNG" alt="Background" class="background-image" />
+    <img src="assets/bg.jpg" alt="" class="background-image" />
     <div class="background-overlay"></div>
 
     <div class="foreground-shell">
     <div class="status-panel opacity-0 animate-fade-in-up" style="animation-delay: 0.12s;">
         <div class="flex items-center gap-3 text-sm md:text-base font-medium whitespace-nowrap">
+            <span id="status-hub" class="status-hub" hidden></span>
+            <span id="status-hub-sep" class="text-white/60" hidden>|</span>
             <span id="status-time">00:00</span>
             <span class="text-white/60">|</span>
             <span id="status-date">Loading date...</span>
@@ -181,8 +192,7 @@
     </div>
 
     <main class="hero-stage absolute inset-0 z-10 w-full min-h-screen px-6 flex flex-col items-center justify-center text-center">
-        
-        <!-- Dynamic Greeting -->
+
         <div class="mb-10 opacity-0 animate-fade-in-up drop-shadow-[0_10px_26px_rgba(0,0,0,0.5)]" style="animation-delay: 0.3s;">
             <h1 id="greeting" class="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight text-white">
                 Good <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">Day</span>
@@ -190,39 +200,33 @@
             <p id="tagline-message" class="tagline-message text-white/88 text-base md:text-lg font-medium">What are we researching today, iCoder?</p>
         </div>
 
-        <!-- Central Search Bar -->
         <div class="w-full max-w-3xl relative opacity-0 animate-fade-in-up" style="animation-delay: 0.5s;">
             <form action="https://www.google.com/search" method="get" class="w-full relative group">
-                <!-- Search Icon -->
                 <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                     <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-cyan-400 transition-colors text-lg"></i>
                 </div>
-                
-                <!-- Input Field -->
-                <input 
-                    type="text" 
-                    name="q" 
+
+                <input
+                    type="text"
+                    name="q"
                     id="main-search"
                     class="w-full bg-white/12 border border-white/18 rounded-2xl py-5 pl-14 pr-8 text-lg md:text-xl text-white placeholder-gray-200 backdrop-blur-xl outline-none transition-all duration-300 search-input-glow shadow-[0_24px_60px_rgba(0,24,102,0.2)]"
-                    placeholder="Search the web" 
-                    autocomplete="off" 
+                    placeholder="Search the web"
+                    autocomplete="off"
                     autofocus
                 >
-                
-                <!-- Enter Button Hint -->
+
                 <div class="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
                     <span class="bg-gray-800 text-gray-400 text-xs px-2 py-1 rounded border border-gray-700 font-mono hidden md:block">↵ Enter</span>
                 </div>
             </form>
-            
         </div>
     </main>
 
     <footer class="absolute bottom-0 left-0 right-0 z-20 pb-8 pt-4 px-6 opacity-0 animate-fade-in-up" style="animation-delay: 0.7s;">
         <div class="max-w-2xl mx-auto">
             <div class="flex flex-wrap justify-center gap-3 sm:gap-5 backdrop-blur-md bg-black/28 border border-white/18 rounded-3xl p-3.5 shadow-2xl">
-                
-                <!-- App Item 1: Scratch -->
+
                 <a href="https://scratch.mit.edu/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:shadow-orange-500/50 transition-shadow">
                         <img src="assets/logos/scratch.png" alt="Scratch logo" class="site-logo" loading="lazy" />
@@ -230,7 +234,6 @@
                     <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">Scratch</span>
                 </a>
 
-                <!-- App Item 2: Tinkercad -->
                 <a href="https://www.tinkercad.com/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:shadow-blue-500/50 transition-shadow">
                         <img src="assets/logos/tinkercad.png" alt="Tinkercad logo" class="site-logo" loading="lazy" />
@@ -238,28 +241,25 @@
                     <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">Tinkercad</span>
                 </a>
 
-                <!-- App Item 3: YouTube -->
-                <a href="https://youtube.com/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:shadow-teal-500/50 transition-shadow">
+                <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:shadow-red-500/50 transition-shadow">
                         <img src="assets/logos/youtube.png" alt="YouTube logo" class="site-logo" loading="lazy" />
                     </div>
                     <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">YouTube</span>
                 </a>
 
-                <!-- App Item 4: iCode Suite -->
-                <a href="https://suite.icodeschool.com/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+                <a href="https://suite.icodeschool.xyz/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:shadow-gray-500/50 transition-shadow">
                         <img src="assets/logos/studentsuite.png" alt="iCode Suite logo" class="site-logo" loading="lazy" />
                     </div>
                     <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">iCode Suite</span>
                 </a>
 
-                <!-- App Item 5: Google Drive -->
-                <a href="https://drive.google.com/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:shadow-purple-500/50 transition-shadow">
-                        <img src="assets/logos/googledrive.png" alt="Google Drive logo" class="site-logo" loading="lazy" />
+                <a href="https://classroom.icodeschool.xyz/" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:shadow-emerald-500/50 transition-shadow">
+                        <img src="assets/logos/linewize.png" alt="Linewize logo" class="site-logo" loading="lazy" />
                     </div>
-                    <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">Google Drive</span>
+                    <span class="text-xs font-medium text-white/90 group-hover:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">Linewize</span>
                 </a>
 
             </div>
@@ -271,22 +271,19 @@
     <script>
         function updateTimeAndGreeting() {
             const now = new Date();
-            
-            // 1. Update Clock
+
             const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
             const statusTime = document.getElementById('status-time');
             if (statusTime) {
                 statusTime.textContent = now.toLocaleTimeString('en-US', timeOptions);
             }
-            
-            // 2. Update Date
+
             const dateOptions = { weekday: 'long', month: 'long', day: 'numeric' };
             const statusDate = document.getElementById('status-date');
             if (statusDate) {
                 statusDate.textContent = now.toLocaleDateString('en-US', dateOptions);
             }
 
-            // 3. Dynamic Greeting based on hour
             const hour = now.getHours();
             let greetingWord = "Day";
             let gradientFrom = "from-cyan-400";
@@ -313,7 +310,6 @@
             const greetingSpan = document.querySelector('#greeting span');
             if (greetingSpan) {
                 greetingSpan.textContent = greetingWord;
-                // Reset existing gradient classes and apply new ones
                 greetingSpan.className = `bg-clip-text text-transparent bg-gradient-to-r ${gradientFrom} ${gradientTo}`;
             }
         }
@@ -328,9 +324,7 @@
 
         function updateTaglineMessage() {
             const taglineMessage = document.getElementById('tagline-message');
-            if (!taglineMessage) {
-                return;
-            }
+            if (!taglineMessage) return;
 
             const messageIndex = Math.floor(Date.now() / 5000) % motivationalMessages.length;
 
@@ -344,22 +338,64 @@
             }, 240);
         }
 
-        // Initialize clock and greeting, then update every second
+        function parseHubFromName(name) {
+            const s = String(name || '').trim();
+            if (!s) return null;
+            const m = s.match(/(?:^|[^a-z0-9])hub[\s_-]*0*(\d{1,2})(?![0-9])/i);
+            if (!m) return null;
+            return String(parseInt(m[1], 10));
+        }
+
+        function setHubStatus(hub, deviceName) {
+            const hubEl = document.getElementById('status-hub');
+            const sepEl = document.getElementById('status-hub-sep');
+            if (!hubEl || !sepEl) return;
+
+            const id = hub || parseHubFromName(deviceName);
+            if (!id) {
+                hubEl.hidden = true;
+                sepEl.hidden = true;
+                hubEl.textContent = '';
+                hubEl.removeAttribute('title');
+                return;
+            }
+
+            hubEl.textContent = `HUB ${id}`;
+            hubEl.title = deviceName ? String(deviceName).slice(0, 64) : `Hub ${id}`;
+            hubEl.hidden = false;
+            sepEl.hidden = false;
+        }
+
+        function requestHubFromExtension() {
+            window.postMessage(
+                { source: 'icode-welcome', type: 'request-hub-context' },
+                '*'
+            );
+        }
+
+        window.addEventListener('message', (event) => {
+            if (event.source !== window) return;
+            const data = event.data;
+            if (!data || data.source !== 'icode-guard') return;
+            if (data.type !== 'hub-context') return;
+            setHubStatus(data.hub, data.deviceName);
+        });
+
         updateTimeAndGreeting();
         setInterval(updateTimeAndGreeting, 1000);
         updateTaglineMessage();
         setInterval(updateTaglineMessage, 5000);
 
-        // Ensure search is always focused when window is clicked or opened
+        requestHubFromExtension();
+        setInterval(requestHubFromExtension, 15000);
+
         window.addEventListener('load', () => {
             const searchInput = document.getElementById('main-search');
-            if (searchInput) {
-                searchInput.focus();
-            }
+            if (searchInput) searchInput.focus();
+            requestHubFromExtension();
         });
         window.addEventListener('click', () => {
             const searchInput = document.getElementById('main-search');
-            // Only force focus if they aren't clicking on a link
             if (searchInput && document.activeElement.tagName !== 'A') {
                 searchInput.focus();
             }
